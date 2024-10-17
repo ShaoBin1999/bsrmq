@@ -1,12 +1,13 @@
 package com.bsren.mq.remote;
 
+import com.bsren.mq.remote.message.Decoder;
+import com.bsren.mq.remote.message.Encoder;
 import com.bsren.mq.remote.protocol.RemotingCommand;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
 
 public class NettyRemoteServer {
 
@@ -17,34 +18,18 @@ public class NettyRemoteServer {
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
-                        //添加具体的handler,将ByteBuf转化为字符串
-                        ch.pipeline().addLast(new StringDecoder());
-                        //自定义handler,连接到读事件，打印字符串
-                        ch.pipeline().addLast(new ChannelInboundHandlerAdapter() {
-                            @Override
-                            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                                System.out.println(msg);
-                            }
-                        });
+                        ch.pipeline().addLast(new Encoder());
+                        ch.pipeline().addLast(new Decoder());
+                        ch.pipeline().addLast(new NettyServerHandler());
                     }
                 })
                 .bind(8080);
     }
 
 
-    private class NettyServerHandler extends SimpleChannelInboundHandler<Object> {
+    private class NettyServerHandler extends SimpleChannelInboundHandler<RemotingCommand> {
         @Override
-        protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
-            System.out.println(msg);
-//            final RemotingCommand cmd = msg;
-//            if(cmd==null){
-//                return;
-//            }
-//            if(cmd.getRequestType()){
-//                System.out.println("服务端收到请求");
-//            }else {
-//                System.out.println("服务端收到回复");
-//            }
+        protected void channelRead0(ChannelHandlerContext ctx, RemotingCommand msg) throws Exception {
         }
     }
 }
