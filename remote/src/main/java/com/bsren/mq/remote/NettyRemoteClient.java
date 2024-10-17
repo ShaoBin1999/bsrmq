@@ -14,6 +14,8 @@ import io.netty.util.concurrent.EventExecutorGroup;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NettyRemoteClient {
 
@@ -43,6 +45,12 @@ public class NettyRemoteClient {
 
     public void sendMsg(String str){
         RemotingCommand command = new RemotingCommand();
+        command.setCode(1);
+        command.setVersion(2);
+        command.setOpaque(3);
+        Map<String,String> map = new HashMap<>();
+        map.put("kr","邝睿");
+        command.setExtFields(map);
         command.setBody(str.getBytes(StandardCharsets.UTF_8));
         System.out.println(command);
         this.channel.writeAndFlush(command);
