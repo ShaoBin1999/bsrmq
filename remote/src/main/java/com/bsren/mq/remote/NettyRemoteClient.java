@@ -16,6 +16,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 public class NettyRemoteClient {
 
@@ -43,16 +45,7 @@ public class NettyRemoteClient {
                 .channel();
     }
 
-    public void sendMsg(String str){
-        RemotingCommand command = new RemotingCommand();
-        command.setCode(1);
-        command.setVersion(2);
-        command.setOpaque(3);
-        Map<String,String> map = new HashMap<>();
-        map.put("kr","邝睿");
-        command.setExtFields(map);
-        command.setBody(str.getBytes(StandardCharsets.UTF_8));
-        System.out.println(command);
+    public void invokeOneway(Channel channel,RemotingCommand command){
         this.channel.writeAndFlush(command);
     }
 
@@ -62,4 +55,16 @@ public class NettyRemoteClient {
 
         }
     }
+
+    public RemotingCommand genRandomRemotingCommand(){
+        Random random = new Random();
+        RemotingCommand cmd = new RemotingCommand();
+        cmd.setOpaque(random.nextInt());
+        cmd.setVersion(1);
+        cmd.setCode(random.nextInt(100));
+        cmd.setBody(UUID.randomUUID().toString().getBytes(StandardCharsets.UTF_8));
+        return cmd;
+    }
+
+
 }

@@ -10,7 +10,7 @@ public class MQSerializable {
 
     public static byte[] ProtocolEncode(RemotingCommand cmd) {
         byte[] mapSerialize = mapSerialize(cmd.getExtFields());
-        int len = 4+4+4+4+mapSerialize.length;
+        int len = 4+4+4+4+(mapSerialize==null?0:mapSerialize.length);
 
         ByteBuffer buffer = ByteBuffer.allocate(len);
         //1.code
@@ -20,7 +20,7 @@ public class MQSerializable {
         //3.opaque
         buffer.putInt(cmd.getOpaque());
         //4.extFields
-        if(cmd.getExtFields()!=null){
+        if(cmd.getExtFields()!=null && !cmd.getExtFields().isEmpty()){
             buffer.putInt(mapSerialize.length);
             buffer.put(mapSerialize);
         }

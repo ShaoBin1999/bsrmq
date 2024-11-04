@@ -1,5 +1,6 @@
 package com.bsren.mq.remote.protocol;
 
+import com.bsren.mq.remote.CommandHeader;
 import com.bsren.mq.remote.Serialize.MQSerializable;
 import io.netty.buffer.ByteBuf;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class RemotingCommand {
 
     private int opaque = requestId.getAndIncrement();
 
-    private Map<String ,String > extFields;
+    private Map<String ,String > extFields = new HashMap<>();
 
     private int serializeType = 0;
 
